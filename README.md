@@ -18,7 +18,7 @@ No real plan to bring the readme up to date unless I find that people actually s
 
 ## USAGE
 
-Run the `daily-thumbnail.py` script to generate the image. the only argument to pass in is `input_movie.mov`
+Run the `daily-thumbnail.py path/to/input_movie.mov --text "Alternate\nTitle\nString` script to generate the image. First argument is filepath, second argument is an optional alternate title. No guarantees that the alternate file you put in will fit nicely, but you can use "\n" to designate new lines.
 
 ## NOTE
 
