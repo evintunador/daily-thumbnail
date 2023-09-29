@@ -4,18 +4,24 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import argparse
 from datetime import datetime
+import ast
 
 def get_high_contrast_color(bg_color):
     brightness = sum(bg_color) / 3
     return (255, 255, 255) if brightness < 128 else (0, 0, 0)
 
-def main(video_path):
+# Get current date
+now = datetime.now()
+default = f"NEW\nARTIFICIAL\nINTELLIGENCE\nPAPERS\n{now.strftime('%b').upper()} {now.day}\n{now.year}"
+
+def main(video_path, text=default):
     # Capture first frame from video
     cap = cv2.VideoCapture(video_path)
     cap.set(cv2.CAP_PROP_POS_FRAMES, 499)
     ret, frame = cap.read()
     cap.release()
 
+    
     if not ret:
         print("Error reading video.")
         return
@@ -29,12 +35,8 @@ def main(video_path):
     text_color = get_high_contrast_color(bg_color)
     text_img = Image.new('RGB', (target_dim[0] // 2, target_dim[1]), color=bg_color)
 
-    font = ImageFont.truetype('arialbd.ttf', 150)
+    font = ImageFont.truetype('arialbd.ttf', 120)
     d = ImageDraw.Draw(text_img)
-    
-    # Get current date
-    now = datetime.now()
-    text = f"NEW AI\nPAPERS\n{now.strftime('%b').upper()} {now.day}\n{now.year}"
     
     text_w, text_h = d.textsize(text, font=font)
     position = ((target_dim[0] // 4) - (text_w // 2), (target_dim[1] // 2) - (text_h // 2))
@@ -54,8 +56,16 @@ def main(video_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Overlay custom image on the first frame of a video.")
     parser.add_argument('video_path', type=str, help='Path to the video file.')
+    parser.add_argument('--text', type=str, 
+                        default=f"NEW\nARTIFICIAL\nINTELLIGENCE\nPAPERS\n{now.strftime('%b').upper()} {now.day}\n{now.year}",
+                        help='Alternative title to input. Dont forget to do \ n for new lines')
+    
     args = parser.parse_args()
-    main(args.video_path)
+
+    # Safely evaluate arg2 to interpret escape sequences
+    arg2_evaluated = args.text.encode('utf-8').decode('unicode_escape')
+
+    main(args.video_path, arg2_evaluated)
 
 
 
